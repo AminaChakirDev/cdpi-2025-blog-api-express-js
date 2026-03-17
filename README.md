@@ -21,7 +21,11 @@ API REST d'un blog développée avec Express.js et MySQL, servant de fil rouge a
 ```bash
    npm install
 ```
-3. Créer un fichier `.env` à la racine du projet :
+3. Importer la base de données :
+```bash
+   mysql -u ton_utilisateur -p < blog.sql
+```
+4. Créer un fichier `.env` à la racine du projet :
 ```
    DB_HOST=localhost
    DB_USER=ton_utilisateur
@@ -29,7 +33,7 @@ API REST d'un blog développée avec Express.js et MySQL, servant de fil rouge a
    DB_NAME=nom_de_ta_base
    JWT_SECRET=ton_secret
 ```
-4. Lancer le serveur :
+5. Lancer le serveur :
 ```bash
    node server.js
 ```
