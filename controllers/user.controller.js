@@ -1,70 +1,56 @@
-const User = require("../models/user.model");
+import * as User from "../models/user.model.js";
 
-const getAllUsers = (req, res) => {
-  User.findAll((error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
-    }
-    res.json(results);
-  });
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll();
+    res.json({ users });
+  } catch (error) {
+    console.error("❌ Erreur lors de la requête SQL:", error.message);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
-const getUserById = (req, res) => {
-  const { id } = req.params;
-
-  User.findById(id, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({message: "Utilisateur non trouvée"});
     }
-
-    if (results.length === 0) {
-      return res.status(404).send("Catégorie non trouvée");
-    }
-
-    res.json(results[0]);
-  });
+    return res.json(user);
+  } catch {
+    console.error("❌ Erreur lors de la requête SQL:", error.message);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
-const updateUser = (req, res) => {
-  const { id } = req.params;
-  const user = req.body;
-
-  User.update(id, user, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.body;
+    const result = await User.update(id, user);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({message: "Utilisateur non trouvé"});
     }
-
-    if (results.affectedRows === 0) {
-      return res.status(404).send("Catégorie non trouvée");
-    }
-
-    res.json({ id: parseInt(id, 10), name });
-  });
+    res.json({ id: parseInt(id, 10) });
+  } catch (error) {
+    console.error("❌ Erreur lors de la requête SQL:", error.message);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
-const deleteUser = (req, res) => {
-  const { id } = req.params;
-
-  User.remove(id, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await User.remove(id);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({message: "Catégorie non trouvée"});
     }
-
-    if (results.affectedRows === 0) {
-      return res.status(404).send("Catégorie non trouvée");
-    }
-
     res.status(204).send();
-  });
+  } catch {
+    console.error("❌ Erreur lors de la requête SQL:", error.message);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
-module.exports = {
-  getAllUsers,
-  getUserById,
-  updateUser,
-  deleteUser,
-};
+export { getAllUsers, getUserById, updateUser, deleteUser };

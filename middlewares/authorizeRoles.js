@@ -1,8 +1,8 @@
 const authorizeRoles = (allowedRoles) => (req, res, next) => {
   if (!allowedRoles.includes(req.user.role)) {
-    return res.status(403).send("Accès interdit");
+    return res.status(403).json({message: "Accès interdit"});
   }
   next();
 };
 
-module.exports = authorizeRoles;
+export { authorizeRoles };

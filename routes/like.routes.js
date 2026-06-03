@@ -1,12 +1,10 @@
-const express = require("express");
+import express from "express";
+
 const router = express.Router();
 
-const {
-  createLike,
-  deleteLike,
-} = require("../controllers/like.controller");
+import { createLike, deleteLike } from "../controllers/like.controller.js";
 
 router.post("/", createLike);
 router.delete("/", deleteLike);
 
-module.exports = router;
+export default router;

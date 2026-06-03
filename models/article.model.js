@@ -1,35 +1,49 @@
-const db = require("../config/database");
+import db from "../config/database.js";
+import AppError from "../errors/AppError.js";
 
-const findAll = (callback) => {
+const findAll = async () => {
   const sql = "SELECT * FROM article";
-  db.query(sql, callback);
+  const [rows] = await db.query(sql);
+  return rows;
 };
 
-const findById = (id, callback) => {
+const findById = async (id) => {
   const sql = "SELECT * FROM article WHERE id = ?";
-  db.query(sql, [id], callback);
+  const [rows] = await db.query(sql, [id]);
+  if (rows.length === 0) {
+    throw new AppError("Article introuvable", 404);
+  }
+
+  return rows[0];
 };
 
-const create = (article, callback) => {
+const create = async (article) => {
   const sql =
     "INSERT INTO article (title, content, category_id) VALUES (?, ?, ?)";
-  db.query(sql, [article.title, article.content, article.categoryId], callback);
+  const [result] = await db.query(sql, [
+    article.title,
+    article.content,
+    article.categoryId,
+  ]);
+  return result.insertId;
 };
 
-const update = (id, article, callback) => {
-  const sql = "UPDATE article SET title = ?, content = ?, category_id = ?  WHERE id = ?";
-  db.query(sql, [article.title, article.content, article.categoryId, id], callback);
+const update = async (id, article) => {
+  const sql =
+    "UPDATE article SET title = ?, content = ?, category_id = ?  WHERE id = ?";
+  const [result] = await db.query(sql, [
+    article.title,
+    article.content,
+    article.categoryId,
+    id,
+  ]);
+  return result;
 };
 
-const remove = (id, callback) => {
+const remove = async (id) => {
   const sql = "DELETE FROM article WHERE id = ?";
-  db.query(sql, [id], callback);
+  const [result] = await db.query(sql, [id]);
+  return result;
 };
 
-module.exports = {
-  findAll,
-  findById,
-  create,
-  update,
-  remove,
-};
+export { findAll, findById, create, update, remove };

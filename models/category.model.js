@@ -1,34 +1,33 @@
-const db = require("../config/database");
+import db from "../config/database.js";
 
-const findAll = (callback) => {
+const findAll = async () => {
   const sql = "SELECT * FROM category";
-  db.query(sql, callback);
+  const [rows] = await db.query(sql);
+  return rows;
 };
 
-const findById = (id, callback) => {
+const findById = async (id) => {
   const sql = "SELECT * FROM category WHERE id = ?";
-  db.query(sql, [id], callback);
+  const [rows] = await db.query(sql, [id]);
+  return rows[0] ?? null;
 };
 
-const create = (name, callback) => {
+const create = async (name) => {
   const sql = "INSERT INTO category (name) VALUES (?)";
-  db.query(sql, [name], callback);
+  const [result] = await db.query(sql, [name]);
+  return result.insertId;
 };
 
-const update = (id, name, callback) => {
+const update = async (id, name) => {
   const sql = "UPDATE category SET name = ? WHERE id = ?";
-  db.query(sql, [name, id], callback);
+  const [result] = await db.query(sql, [name, id]);
+  return result;
 };
 
-const remove = (id, callback) => {
+const remove = async (id) => {
   const sql = "DELETE FROM category WHERE id = ?";
-  db.query(sql, [id], callback);
+  const [result] = await db.query(sql, [id]);
+  return result;
 };
 
-module.exports = {
-  findAll,
-  findById,
-  create,
-  update,
-  remove,
-};
+export { findAll, findById, create, update, remove };

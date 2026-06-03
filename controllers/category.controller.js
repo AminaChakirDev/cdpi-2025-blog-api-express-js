@@ -1,81 +1,71 @@
-const Category = require("../models/category.model");
+import * as Category from "../models/category.model.js";
 
-const getAllCategories = (req, res) => {
-  Category.findAll((error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
-    }
-    res.json(results);
-  });
+const getAllCategories = async (req, res) => {
+  try {
+    const articles = await Category.findAll();
+    res.json(articles);
+  } catch (error) {
+    console.error("❌ Erreur lors de la requête SQL:", error.message);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
-const getCategoryById = (req, res) => {
-  const { id } = req.params;
-
-  Category.findById(id, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
+const getCategoryById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({ message: "Catégorie non trouvée" });
     }
-
-    if (results.length === 0) {
-      return res.status(404).send("Catégorie non trouvée");
-    }
-
-    res.json(results[0]);
-  });
+    return res.json(category);
+  } catch (error) {
+    console.error("❌ Erreur lors de la requête SQL:", error.message);
+    return res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
-const createCategory = (req, res) => {
-  const { name } = req.body;
-
-  Category.create(name, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
-    }
-
-    res.status(201).json({ id: results.insertId, name });
-  });
+const createCategory = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const newCategoryId = await Category.create(name);
+    return res.status(201).json({ id: newCategoryId });
+  } catch (error) {
+    console.error("❌ Erreur lors de la requête SQL:", error.message);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
-const updateCategory = (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body;
-
-  Category.update(id, name, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
+const updateCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    const result = await Category.update(id, name);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Catégorie non trouvée" });
     }
-
-    if (results.affectedRows === 0) {
-      return res.status(404).send("Catégorie non trouvée");
-    }
-
-    res.json({ id: parseInt(id, 10), name });
-  });
+    res.json({ id: parseInt(id, 10) });
+  } catch (error) {
+    console.error("❌ Erreur lors de la requête SQL:", error.message);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
-const deleteCategory = (req, res) => {
-  const { id } = req.params;
-
-  Category.remove(id, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
-    }
-
-    if (results.affectedRows === 0) {
-      return res.status(404).send("Catégorie non trouvée");
+const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await Category.remove(id);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Catégorie non trouvée" });
     }
 
     res.status(204).send();
-  });
+  } catch (error) {
+    console.error("❌ Erreur lors de la requête SQL:", error.message);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
-module.exports = {
+export {
   getAllCategories,
   getCategoryById,
   createCategory,

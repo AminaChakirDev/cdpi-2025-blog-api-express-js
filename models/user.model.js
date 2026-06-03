@@ -1,46 +1,52 @@
-const db = require("../config/database");
+import db from "../config/database.js";
 
-const findAll = (callback) => {
+const findAll = async () => {
   const sql = "SELECT * FROM user";
-  db.query(sql, callback);
+  const [rows] = await db.query(sql);
+  return rows;
 };
 
-const findById = (id, callback) => {
+const findById = async (id) => {
   const sql = "SELECT * FROM user WHERE id = ?";
-  db.query(sql, [id], callback);
+  const [rows] = await db.query(sql, [id]);
+  return rows[0];
 };
 
-const findByEmail = (email, callback) => {
+const findByEmail = async (email) => {
   const sql = "SELECT * FROM user WHERE email = ?";
-  db.query(sql, [email], callback);
+  const [rows] = await db.query(sql, [email]);
+  return rows[0];
 };
 
-const create = (firstname,lastname, email, hashedPassword, callback) => {
+const create = async (firstname, lastname, email, hashedPassword) => {
   const sql =
     "INSERT INTO user (firstname, lastname, email, password) VALUES (?, ?, ?, ?)";
-  db.query(sql, [firstname, lastname, email, hashedPassword], callback);
+  const [result] = await db.query(sql, [
+    firstname,
+    lastname,
+    email,
+    hashedPassword,
+  ]);
+  return result.insertId;
 };
 
-const update = (id, user, callback) => {
+const update = async (id, user) => {
   const sql =
     "UPDATE user SET firstname = ?, lastname = ?, email = ?, password = ?  WHERE id = ?";
-  db.query(
-    sql,
-    [user.firstname, user.lastname, user.email, user.password, id],
-    callback
-  );
+  const [result] = await db.query(sql, [
+    user.firstname,
+    user.lastname,
+    user.email,
+    user.password,
+    id,
+  ]);
+  return result;
 };
 
-const remove = (id, callback) => {
+const remove = async (id) => {
   const sql = "DELETE FROM user WHERE id = ?";
-  db.query(sql, [id], callback);
+  const [result] = await db.query(sql, [id]);
+  return result;
 };
 
-module.exports = {
-  findAll,
-  findById,
-  findByEmail,
-  create,
-  update,
-  remove,
-};
+export { findAll, findById, findByEmail, create, update, remove };

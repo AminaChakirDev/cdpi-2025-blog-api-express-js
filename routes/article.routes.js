@@ -1,21 +1,41 @@
-const express = require("express");
+import express from "express";
+
 const router = express.Router();
 
-const {
+import {
   getAllArticles,
   getArticleById,
   createArticle,
   updateArticle,
   deleteArticle,
-} = require("../controllers/article.controller");
+} from "../controllers/article.controller.js";
 
-const authenticateToken = require("../middlewares/authenticateToken");
-const authorizeRoles = require("../middlewares/authorizeRoles");
+import { authenticateToken } from "../middlewares/authenticateToken.js";
+import { authorizeRoles } from "../middlewares/authorizeRoles.js";
 
-router.get("/", authenticateToken, authorizeRoles(["ADMIN", "USER"]), getAllArticles);
-router.get("/:id", getArticleById);
-router.post("/", createArticle);
-router.put("/:id", updateArticle);
-router.delete("/:id", deleteArticle);
+import {
+  validateArticleBody,
+  validateArticleId,
+} from "../validators/article.validator.js";
+import validate from "../middlewares/validate.js";
 
-module.exports = router;
+router.get("/", getAllArticles);
+router.get("/:id", validateArticleId, validate, getArticleById);
+router.post(
+  "/",
+  authenticateToken,
+  authorizeRoles(["ADMIN"]),
+  validateArticleBody,
+  validate,
+  createArticle,
+);
+router.put(
+  "/:id",
+  validateArticleId,
+  validateArticleBody,
+  validate,
+  updateArticle,
+);
+router.delete("/:id", validateArticleId, validate, deleteArticle);
+
+export default router;

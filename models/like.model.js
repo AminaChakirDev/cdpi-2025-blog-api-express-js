@@ -1,17 +1,15 @@
-const db = require("../config/database");
+import db from "../config/database.js";
 
-const create = (body, callback) => {
+const create = async (body) => {
   const sql =
     "INSERT INTO article_user_like (user_id, article_id) VALUES (?, ?)";
-  db.query(sql, [body.userId, body.articleId], callback);
+  const [result] = await db.query(sql, [body.userId, body.articleId]);
+  return result.insertId;
 };
 
-const remove = (body, callback) => {
+const remove = async (body, callback) => {
   const sql = "DELETE FROM user WHERE user_id = ? AND article_id = ?";
-  db.query(sql, [body.userId, body.articleId], callback);
+  const [result] = await db.query(sql, [body.userId, body.articleId], callback);
 };
 
-module.exports = {
-  create,
-  remove,
-};
+export { create, remove };

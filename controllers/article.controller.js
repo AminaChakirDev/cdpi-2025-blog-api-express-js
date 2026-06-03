@@ -1,81 +1,45 @@
-const Article = require("../models/article.model");
+import * as Article from "../models/article.model.js";
+import * as ArticleService from "../services/article.service.js";
 
-const getAllArticles = (req, res) => {
-  Article.findAll((error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
-    }
-    res.json(results);
-  });
+const getAllArticles = async (req, res) => {
+  const articles = await ArticleService.getAll();
+  res.json(articles);
 };
 
-const getArticleById = (req, res) => {
+const getArticleById = async (req, res) => {
   const { id } = req.params;
 
-  Article.findById(id, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
-    }
-
-    if (results.length === 0) {
-      return res.status(404).send("Catégorie non trouvée");
-    }
-
-    res.json(results[0]);
-  });
+  const article = await Article.findById(id);
+  res.json(article);
 };
 
-const createArticle = (req, res) => {
-  const article = req.body;
+const createArticle = async (req, res) => {
+  const newArticle = req.body;
 
-  Article.create(article, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
-    }
-
-    res.status(201).json({ id: results.insertId, article });
-  });
+  const newArticleId = await Article.create(newArticle);
+  res.status(201).json(newArticle);
 };
 
-const updateArticle = (req, res) => {
+const updateArticle = async (req, res) => {
   const { id } = req.params;
   const article = req.body;
-
-  Article.update(id, article, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
-    }
-
-    if (results.affectedRows === 0) {
-      return res.status(404).send("Catégorie non trouvée");
-    }
-
-    res.json({ id: parseInt(id, 10), name });
-  });
+  const result = await Article.update(id, article);
+  if (result.affectedRows === 0) {
+    return res.status(404).json({ message: "Article not found" });
+  }
+  res.json({ message: "Article updated" });
 };
 
-const deleteArticle = (req, res) => {
+const deleteArticle = async (req, res) => {
   const { id } = req.params;
-
-  Article.remove(id, (error, results) => {
-    if (error) {
-      console.error("❌ Erreur lors de la requête SQL:", error.message);
-      return res.status(500).send("Erreur serveur");
-    }
-
-    if (results.affectedRows === 0) {
-      return res.status(404).send("Catégorie non trouvée");
-    }
-
-    res.status(204).send();
-  });
+  const result = await Article.remove(id);
+  if (result.affectedRows === 0) {
+    return res.status(404).json({ message: "Article not found" });
+  }
+  res.status(204).send();
 };
 
-module.exports = {
+export {
   getAllArticles,
   getArticleById,
   createArticle,

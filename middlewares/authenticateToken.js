@@ -1,17 +1,17 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).send("Accès refusé");
+    return res.status(401).json({ message: "Accès refusé" });
   }
 
   const token = authHeader.split(" ")[1];
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).send("Token invalide ou expiré");
+      return res.status(401).json({ message: "Token invalide ou expiré" });
     }
 
     req.user = decoded;
@@ -19,4 +19,4 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-module.exports = authenticateToken;
+export { authenticateToken };
