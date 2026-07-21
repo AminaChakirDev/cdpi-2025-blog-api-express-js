@@ -39,7 +39,7 @@ describe("POST /articles", () => {
   it("retourne 401 si aucun token n'est fourni", async () => {
     const response = await request(app)
       .post("/articles")
-      .send({ title: "Nouvel article", content: "Contenu...", category_id: 1 });
+      .send({ title: "Nouvel article", content: "Contenu...", categoryId: 1 });
 
     expect(response.status).toBe(401);
   });
@@ -50,7 +50,7 @@ describe("POST /articles", () => {
     const response = await request(app)
       .post("/articles")
       .set("Authorization", `Bearer ${token}`)
-      .send({ title: "Nouvel article", content: "Contenu...", category_id: 1 });
+      .send({ title: "Nouvel article", content: "Contenu...", categoryId: 1 });
 
     expect(response.status).toBe(403);
   });
@@ -64,7 +64,9 @@ describe("POST /articles", () => {
     const response = await request(app)
       .post("/articles")
       .set("Authorization", `Bearer ${token}`)
-      .send({ title: "Nouvel article", content: "Contenu...", category_id: 1 });
+      .send({ title: "Nouvel article", content: "Contenu...", categoryId: 1 });
+
+    console.log(response.body); // affiche l'erreur renvoyée par le serveur
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("title", "Nouvel article");
