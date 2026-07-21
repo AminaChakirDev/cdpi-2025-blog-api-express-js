@@ -66,6 +66,8 @@ describe("POST /articles", () => {
       .set("Authorization", `Bearer ${token}`)
       .send({ title: "Nouvel article", content: "Contenu...", category_id: 1 });
 
+    console.log(response.body); // affiche l'erreur renvoyée par le serveur
+
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("title", "Nouvel article");
   });
