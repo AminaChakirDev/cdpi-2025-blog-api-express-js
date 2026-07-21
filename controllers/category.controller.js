@@ -1,13 +1,9 @@
 import * as Category from "../models/category.model.js";
+import * as categoryService from "../services/category.service.js"
 
 const getAllCategories = async (req, res) => {
-  try {
-    const articles = await Category.findAll();
-    res.json(articles);
-  } catch (error) {
-    console.error("❌ Erreur lors de la requête SQL:", error.message);
-    res.status(500).json({ message: "Erreur serveur" });
-  }
+  const categories = await categoryService.getAll();
+  res.json(categories);
 };
 
 const getCategoryById = async (req, res) => {

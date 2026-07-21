@@ -23,6 +23,10 @@ app.use(
 
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "API blog en ligne" });
+});
+
 app.use("/categories", categoryRoutes);
 app.use("/articles", articleRoutes);
 app.use("/users", userRoutes);
