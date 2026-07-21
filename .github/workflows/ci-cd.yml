@@ -68,6 +68,6 @@ jobs:
             username: ${{ secrets.VPS_USER }}
             key: ${{ secrets.VPS_SSH_KEY }}
             script: |
-              cd ~/backend
+              cd ~/blog_amina_backend
               git pull
               docker compose up -d --build
